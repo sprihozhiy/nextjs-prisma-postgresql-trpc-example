@@ -77,7 +77,7 @@ Navigate to `http://localhost:3000` to access the form.
 
 This file sets up the tRPC API handler, which connects your Next.js app to the backend API.
 
-### 2. ** Frontend Form (React + tRPC) - `app/page.tsx`**
+### 2. **Frontend Form (React + tRPC) - `app/page.tsx`**
 
 The form on the homepage allows users to submit their details. It uses React hooks to manage state and tRPC to call the backend API to create a new user.
 
