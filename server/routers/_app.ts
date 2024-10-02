@@ -20,6 +20,7 @@ export const appRouter = t.router({
       })
     )
     .mutation(async ({ input }) => {
+      console.log('Creating user with:', input);
       // When the 'createUser' mutation is called, this function runs
       const newUser = await prisma.user.create({
         data: {
