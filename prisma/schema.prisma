@@ -1,0 +1,23 @@
+// ./prisma/schema.prisma
+
+// This file defines the structure of your database tables using Prisma
+
+datasource db {
+  provider = "postgresql" // We're using PostgreSQL as the database
+  url      = env("DATABASE_URL") // The connection string for the database is stored in the .env file
+}
+
+generator client {
+  provider = "prisma-client-js" // This generates the Prisma client in JavaScript for interacting with the database
+}
+
+// Define the 'User' model (a table in the database)
+model User {
+  id        String   @id @default(cuid()) // Unique identifier, auto-generated
+  email     String   @unique // Email must be unique
+  name      String? // Optional name field
+  createdAt DateTime @default(now()) // Automatically stores when the user is created
+  updatedAt DateTime @updatedAt // Automatically updates when the record is modified
+  subscriptionPlan String // Stores the subscription plan (Free, Basic, Pro)
+  tokens Int // Number of tokens assigned to the user (depending on subscription)
+}

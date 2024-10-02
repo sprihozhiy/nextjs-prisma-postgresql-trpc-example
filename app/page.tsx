@@ -1,101 +1,79 @@
-import Image from "next/image";
+// ./app/page.tsx
 
-export default function Home() {
+'use client'; // Ensure this is a Client Component in Next.js (required for tRPC hooks)
+
+import { useState } from 'react'; // React hook to manage form inputs
+import { trpc } from '@/lib/trpc'; // Import tRPC client to communicate with the backend
+
+// The main function for the Home page, which will have a form to create a new user
+function Home() {
+  const [email, setEmail] = useState(''); // State to store the email input
+  const [name, setName] = useState(''); // State to store the name input
+  const [subscriptionPlan, setSubscriptionPlan] = useState<'Free' | 'Basic' | 'Pro'>('Free'); // State for the subscription plan, default is 'Free'
+
+  // Create a tRPC mutation to call the backend 'createUser' API
+  const createUser = trpc.createUser.useMutation();
+
+  // Function that runs when the form is submitted
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); // Prevent the form from refreshing the page
+
+    try {
+      // Call the tRPC API to create a user
+      await createUser.mutateAsync({ email, name, subscriptionPlan });
+      alert('User created successfully!'); // Show a success message
+
+      // Reset form inputs after successful submission
+      setEmail('');
+      setName('');
+      setSubscriptionPlan('Free');
+    } catch (error) {
+      console.error('Error creating user:', error); // Log any errors
+    }
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div>
+      <h1>Create User</h1>
+      <form onSubmit={handleSubmit}> {/* Form to collect user data */}
+        <div>
+          <label>Email:</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)} // Update email state
+            required // Field is required
+          />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+
+        <div>
+          <label>Name:</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)} // Update name state
+            required // Field is required
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        </div>
+
+        <div>
+          <label>Subscription Plan:</label>
+          <select
+            value={subscriptionPlan}
+            onChange={(e) => setSubscriptionPlan(e.target.value as 'Free' | 'Basic' | 'Pro')} // Update subscription plan state
+            required // Field is required
+          >
+            <option value="Free">Free</option>
+            <option value="Basic">Basic</option>
+            <option value="Pro">Pro</option>
+          </select>
+        </div>
+
+        <button type="submit">Submit</button> {/* Submit the form */}
+      </form>
     </div>
   );
 }
+
+// Wrap the Home component with tRPC functionality for API support
+export default trpc.withTRPC(Home);
